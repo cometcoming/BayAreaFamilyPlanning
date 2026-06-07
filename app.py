@@ -3,14 +3,15 @@ import streamlit as st
 st.title("Bay Area Household Planner")
 
 city = st.selectbox(
-    "City",
-    ["San Francisco", "San Jose", "Oakland"]
+    "City of Interest",
+    ["San Jose", "San Francisco", "Oakland", "Santa Clara", "Sunnyvale", "Mountain View", "Palo Alto", "Cupertino", "Milpitas", "Saratoga", "Los Gatos", "Daly City", "San Mateo", "Redwood City", "South San Francisco", "Burlingame", "Menlo Park", "Palo Alto", "Los Altos", "Foster City", "Berkeley", "Fremont", "Hayward", "Concord", "Richmond", "Pleasanton", "Walnut Creek", "Livermore", "Dublin", "Alameda", "San Leandro", "Antioch", "Pittsburg", "Martinez"]
 )
 
-income = st.number_input(
-    "Annual Household Income",
-    min_value=0,
-    value=100000
+adults = st.slider(
+    "Number of Adults",
+    1,
+    10,
+    2
 )
 
 children = st.slider(
@@ -19,6 +20,13 @@ children = st.slider(
     5,
     0
 )
+
+for i in range(children):
+    age = st.number_input(
+        f"Child {i+1} Age",
+        min_value=0,
+        max_value=25
+    )
 
 vehicles = st.slider(
     "Number of Vehicles",
