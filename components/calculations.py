@@ -1,11 +1,10 @@
-# calculations.py
-from data import (
+from components.data import (
     RENT_BY_CITY, DEFAULT_RENT, BASE_COST_PER_ADULT, BASE_COST_PER_CHILD,
     LIFESTYLE_MULTIPLIER, VEHICLE_COST, HOUSING_TYPE_MULTIPLIER, BEDROOM_MULTIPLIER,
 )
 
 def calc_housing(city, housing_market, properties):
-  """Monthly housing cost."""
+    """Monthly housing cost."""
     total = 0
     for prop in properties:
         if prop["ownership"] == "Owned":

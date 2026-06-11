@@ -1,5 +1,7 @@
 import streamlit as st
 
+from components.calculations import calc_monthly_budget
+
 st.markdown('<p style="font-size: 60px; font-weight: bold;">Bay Area Household Planner</p>', unsafe_allow_html=True)
 st.text("Disclaimer: Not meant to be taken completely seriously as financial advice, simply a tool for financial planning in the Bay Area.")
 
@@ -63,26 +65,43 @@ properties = st.slider(
     1
 )
 
+property_ownerships = []
 for i in range(properties):
     with st.expander(f"Property {i+1} Ownership Status"):
-        status = st.radio("Ownership", ["Owned", "Leased", "Rented"], key=f"property_radio_{i}", label_visibility="collapsed")
-
-for i in range(properties):
-    with st.expander(f"Property {i+1} Housing Type"):
-        housing = st.radio("Housing", ["Single-Family Home", "Townhome", "Condo", "Apartment"], key=f"property_housing_{i}", label_visibility="collapsed")
-
-for i in range(properties):
-    with st.expander(f"Property {i+1} Number of Bedrooms"):
-        bedrooms = st.slider(
-            "Number of Bedrooms",
-            0,
-            8,
-            1, key=f"property_bedrooms{i}"
+        property_ownerships.append(
+            st.radio("Ownership", ["Owned", "Leased", "Rented"], key=f"property_radio_{i}", label_visibility="collapsed")
         )
 
+property_housing_types = []
+for i in range(properties):
+    with st.expander(f"Property {i+1} Housing Type"):
+        property_housing_types.append(
+            st.radio("Housing", ["Single-Family Home", "Townhome", "Condo", "Apartment"], key=f"property_housing_{i}", label_visibility="collapsed")
+        )
+
+property_bedrooms_list = []
+for i in range(properties):
+    with st.expander(f"Property {i+1} Number of Bedrooms"):
+        property_bedrooms_list.append(
+            st.slider("Number of Bedrooms", 0, 8, 1, key=f"property_bedrooms_{i}")
+        )
+
+property_hoa_fees = []
 for i in range(properties):
     with st.expander(f"Property {i+1} Monthly HOA Fee (if applicable)"):
-        hoa_fee = st.number_input("Monthly HOA Fee (if applicable)", placeholder="____", key=f"property_hoa_fee{i}")
+        property_hoa_fees.append(
+            st.number_input("Monthly HOA Fee (if applicable)", min_value=0, value=0, key=f"property_hoa_fee_{i}")
+        )
+
+property_details = [
+    {
+        "ownership": property_ownerships[i],
+        "housing_type": property_housing_types[i],
+        "bedrooms": property_bedrooms_list[i],
+        "hoa_fee": property_hoa_fees[i],
+    }
+    for i in range(properties)
+]
 
 st.subheader("Transportation")
 
@@ -93,9 +112,12 @@ vehicles = st.slider(
     1
 )
 
+vehicle_statuses = []
 for i in range(vehicles):
     with st.expander(f"Vehicle {i+1} Ownership Status"):
-        status = st.radio("Ownership", ["Owned", "Leased", "Rented"], key=f"vehicle_radio_{i}", label_visibility="collapsed")
+        vehicle_statuses.append(
+            st.radio("Ownership", ["Owned", "Leased", "Rented"], key=f"vehicle_radio_{i}", label_visibility="collapsed")
+        )
 
 with st.expander("Public Transit"):
     transit_usage = st.radio(
@@ -169,10 +191,6 @@ st.write("City:", city)
 #st.write("Income:", income)
 st.write("Children:", children)
 st.write("Vehicles:", vehicles)
-
-from calculations import calc_monthly_budget
-
-# ... all your widgets above ...
 
 inputs = {
     "city": city,
