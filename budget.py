@@ -140,10 +140,6 @@ with st.expander("Public Transit"):
             help="Include passes, Clipper loads, BART/Muni/Caltrain, etc.",
         )
 
-st.subheader("Employment and Income")
-
-
-
 st.subheader("Household Debt")
 
 stu_debt = st.number_input("Monthly Student Loan Debt", placeholder="____", key=f"stu_debt")
