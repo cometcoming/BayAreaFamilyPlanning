@@ -206,7 +206,10 @@ st.divider()
 st.subheader("Estimated Monthly Budget")
 
 if st.button("Calculate"):
-    results = calc_monthly_budget(inputs)
+    st.session_state.budget_results = calc_monthly_budget(inputs)
+
+if "budget_results" in st.session_state:
+    results = st.session_state.budget_results
 
     col1, col2, col3 = st.columns(3)
     col1.metric("Monthly need", f"${results['monthly_total']:,.0f}")
