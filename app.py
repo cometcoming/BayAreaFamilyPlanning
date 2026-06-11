@@ -84,10 +84,10 @@ for i in range(properties):
     with st.expander(f"Property {i+1} Monthly HOA Fee (if applicable)"):
         hoa_fee = st.number_input("Monthly HOA Fee (if applicable)", placeholder="____", key=f"property_hoa_fee{i}")
 
-st.subheader("Vehicles")
+st.subheader("Transportation")
 
 vehicles = st.slider(
-    "Number of Vehicles",
+    "Number of Private Vehicles",
     0,
     5,
     1
@@ -97,11 +97,52 @@ for i in range(vehicles):
     with st.expander(f"Vehicle {i+1} Ownership Status"):
         status = st.radio("Ownership", ["Owned", "Leased", "Rented"], key=f"vehicle_radio_{i}", label_visibility="collapsed")
 
+with st.expander("Public Transit"):
+    transit_usage = st.radio(
+        "Transit usage",
+        ["None", "Occasional", "Regular commuter"],
+        key="transit_usage",
+        horizontal=True,
+    )
+
+    if transit_usage == "None":
+        transit_cost = 0
+    else:
+        default_cost = 81 if transit_usage == "Regular commuter" else 20
+        transit_cost = st.number_input(
+            "Monthly public transit cost ($)",
+            min_value=0,
+            value=default_cost,
+            step=5,
+            key="transit_monthly_cost",
+            help="Include passes, Clipper loads, BART/Muni/Caltrain, etc.",
+        )
+
 st.subheader("Employment and Income")
 
-st.subheader("Debt")
+
+
+st.subheader("Household Debt")
+
+stu_debt = st.number_input("Monthly Student Loan Debt", placeholder="____", key=f"stu_debt")
+car_debt = st.number_input("Monthly Auto Loan Debt", placeholder="____", key=f"car_debt")
+home_debt = st.number_input("Monthly Home Loan Debt", placeholder="____", key=f"home_debt")
+credit_card_debt = st.number_input("Monthly Credit Card Debt", placeholder="____", key=f"credit_card_debt")
+other_debt = st.number_input("Monthly Other Debt", placeholder="____", key=f"other_debt")
+
+total_debt = stu_debt + car_debt + home_debt + credit_card_debt + other_debt
 
 st.subheader("Savings Goals")
+
+emergency_fund_savings = st.number_input("Monthly Emergency Fund Savings", placeholder="____", key=f"emergency_fund_savings")
+with st.expander(f"Months in Emergency Fund Goal"):
+    months = st.number_input("Months", min_value=1, max_value=100, value=3, key=f"emergency_fund_months")
+college_savings = st.number_input("Monthly College Savings", placeholder="____", key=f"savings_goal")
+investment_savings = st.number_input("Monthly Investment Savings", placeholder="____", key=f"investment_savings")
+retirement_savings = st.number_input("Monthly Retirement Savings", placeholder="____", key=f"retirement_savings")
+other_savings = st.number_input("Monthly Other Savings", placeholder="____", key=f"other_savings")
+
+total_savings = college_savings + investment_savings + retirement_savings + emergency_fund_savings + other_savings
 
 st.subheader("Lifestyle")
 
@@ -128,3 +169,40 @@ st.write("City:", city)
 #st.write("Income:", income)
 st.write("Children:", children)
 st.write("Vehicles:", vehicles)
+
+from calculations import calc_monthly_budget
+
+# ... all your widgets above ...
+
+inputs = {
+    "city": city,
+    "housing_market": housing_market,
+    "adults": adults,
+    "children": children,
+    "properties": property_details,
+    "vehicles": vehicles,
+    "vehicle_statuses": vehicle_statuses,
+    "transit_cost": transit_cost,
+    "lifestyle": lifestyle,
+    "total_debt": stu_debt + car_debt + home_debt + credit_card_debt + other_debt,
+    "total_savings": total_savings,
+}
+
+st.divider()
+st.subheader("Estimated Monthly Budget")
+
+if st.button("Calculate"):
+    results = calc_monthly_budget(inputs)
+
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Monthly need", f"${results['monthly_total']:,.0f}")
+    col2.metric("Annual need", f"${results['annual_total']:,.0f}")
+    col3.metric("Housing", f"${results['housing']:,.0f}")
+
+    st.bar_chart({
+        "Housing": results["housing"],
+        "Transportation": results["transportation"],
+        "Living": results["living"],
+        "Debt": results["debt"],
+        "Savings": results["savings"],
+    })
